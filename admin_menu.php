@@ -86,12 +86,34 @@ function display_elements($elements, $profex_settings_array){
                         <div class="rt_clearfix"></div>
                     </div>
                     <select name="profex_options[<?php echo $element['name']; ?>]" id="profex_page_id">
-                        <option value="none" default="default"><?php _e('Выберите страницу', 'profex'); ?></option>
+                        <option value="none" default="default"><?php _e('Select a page', 'profex'); ?></option>
                         <?php    
                             $opt = $profex_settings_array[$element['name']];
                             $pages = get_pages('orderby=name');
                             foreach ($pages as $page ) {
                                 echo '<option value="'.$page->ID.'" '.selected( $opt, $page->ID ).' >'.$page->post_title.'</option>';
+                            }
+                        ?>
+                    </select>
+                    <div class="rt_clearfix"></div>
+                </div> 
+            <?php
+            break;
+            
+            case 'categories':
+            ?>
+                <div class="rt_input rt_text">
+                    <div class="rt_description">
+                        <label for="multi_<?php echo $element['name']; ?>"><?php _e($element['title'], 'multi'); ?></label>
+                        <div class="rt_clearfix"></div>
+                    </div>
+                    <select name="multi_options[<?php echo $element['name']; ?>]" id="multi_page_id">
+                        <option value="none" default="default"><?php _e('Select a category', 'multi'); ?></option>
+                        <?php    
+                            $opt = $multi_settings_array[$element['name']];
+                            $cats = get_categories('orderby=name');
+                            foreach ($cats as $cat ) {
+                                echo '<option value="'.$cat->cat_ID.'" '.selected( $opt, $cat->cat_ID ).' >'.$cat->cat_name.'</option>';
                             }
                         ?>
                     </select>
