@@ -2,15 +2,14 @@
 function profex_AdminLiveInit() {
 // Live Settings Script for admin
 
-wp_register_script( 'admin-live-script', get_template_directory_uri() . '/includes/Profex-Theme-Option/js/admin-js.js');
-wp_enqueue_script(  'admin-live-script' );
+wp_enqueue_script( 'admin-live-script', get_template_directory_uri() . '/includes/Profex-Theme-Options/js/admin-js.js');
 
 wp_enqueue_script('media-upload');
 wp_enqueue_script('thickbox');
-wp_enqueue_script('profex-tabs', get_template_directory_uri().'/includes/Profex-Theme-Option/js/tabs.js');
+wp_enqueue_script('profex-tabs', get_template_directory_uri().'/includes/Profex-Theme-Options/js/tabs.js');
 
-wp_enqueue_style( 'st-admin-style', get_template_directory_uri() . '/includes/Profex-Theme-Option/css/style.css' );
-wp_enqueue_style( 'st-admin-tabs', get_template_directory_uri() . '/includes/Profex-Theme-Option/css/jquery-tabs.css' );
+wp_enqueue_style( 'st-admin-style', get_template_directory_uri() . '/includes/Profex-Theme-Options/css/style.css' );
+wp_enqueue_style( 'st-admin-tabs', get_template_directory_uri() . '/includes/Profex-Theme-Options/css/jquery-tabs.css' );
 }
 if (isset($_REQUEST['page']) && $_REQUEST['page'] == 'theme_settings'){
     add_action('admin_footer', 'profex_AdminLiveInit');
@@ -21,10 +20,10 @@ add_action('admin_menu', 'profex_create_menu');
 function profex_create_menu() {
     add_theme_page(__('Profex settings', 'profex'), __('Profex settings', 'profex'), 'edit_theme_options', 'theme_settings', 'profex_settings_page');
 
-    add_action( 'admin_init', 'register_mysettings' );
+    add_action( 'admin_init', 'register_profex_settings' );
 }
 
-function register_mysettings() {
+function register_profex_settings() {
     register_setting( 'profex-settings-group', 'profex_options' );
 }
 
@@ -44,11 +43,18 @@ $profex_options = get_option('profex_options');
 function display_elements($elements, $profex_settings_array){
     foreach($elements as $element){
         switch($element['type']){
+            case 'spliter':
+            ?>
+                <h3><?php _e($element['title'], 'profex'); ?></h3>
+            <?php
+            break;
+            
             case 'text':
             ?>
                 <div class="rt_input rt_text">
                     <div class="rt_description">
                         <label for="profex_<?php echo $element['name']; ?>"><?php _e($element['title'], 'profex'); ?></label>
+                        <?php if($element['description']) echo '<small>'.$element['description'].'</small>'; ?>
                         <div class="rt_clearfix"></div>
                     </div>
                     <input name="profex_options[<?php echo $element['name']; ?>]" id="profex_<?php echo $element['name']; ?>" type="text" value="<?php echo esc_attr(profex_text_check($profex_settings_array, $element['name'])); ?>" />
@@ -57,9 +63,17 @@ function display_elements($elements, $profex_settings_array){
             <?php
             break;
             
-            case 'spliter':
+            case 'checkbox':
             ?>
-                <h3><?php _e($element['title'], 'profex'); ?></h3>
+                <div class="rt_input rt_text">
+                    <div class="rt_description">
+                        <label for="profex_<?php echo $element['name']; ?>"><?php _e($element['title'], 'profex'); ?></label>
+                        <?php if($element['description']) echo '<small>'.$element['description'].'</small>'; ?>
+                        <div class="rt_clearfix"></div>
+                    </div>
+                    <input name="profex_options[<?php echo $element['name']; ?>]" id="profex_<?php echo $element['name']; ?>" type="checkbox" value="1" <?php checked(profex_text_check($profex_settings_array, $element['name']) , 1); ?> />
+                    <div class="rt_clearfix"></div>
+                </div>
             <?php
             break;
             
@@ -68,11 +82,10 @@ function display_elements($elements, $profex_settings_array){
                 <div class="rt_input rt_text">
                     <div class="rt_description">
                         <label for="profex_<?php echo $element['name']; ?>"><?php _e($element['title'], 'profex'); ?></label>
+                        <?php if($element['description']) echo '<small>'.$element['description'].'</small>'; ?>
                         <div class="rt_clearfix"></div>
                     </div>
-                    <textarea name="profex_options[<?php echo $element['name']; ?>]" id="profex_<?php echo $element['name']; ?>" cols="30" rows="10">
-                        <?php echo esc_attr(profex_text_check($profex_settings_array, $element['name'])); ?>
-                    </textarea>
+                    <textarea name="profex_options[<?php echo $element['name']; ?>]" id="profex_<?php echo $element['name']; ?>" cols="30" rows="10"><?php echo esc_attr(profex_text_check($profex_settings_array, $element['name'])); ?></textarea>
                     <div class="rt_clearfix"></div>
                 </div>
             <?php
@@ -83,9 +96,10 @@ function display_elements($elements, $profex_settings_array){
                 <div class="rt_input rt_text">
                     <div class="rt_description">
                         <label for="profex_<?php echo $element['name']; ?>"><?php _e($element['title'], 'profex'); ?></label>
+                        <?php if($element['description']) echo '<small>'.$element['description'].'</small>'; ?>
                         <div class="rt_clearfix"></div>
                     </div>
-                    <select name="profex_options[<?php echo $element['name']; ?>]" id="profex_page_id">
+                    <select name="profex_options[<?php echo $element['name']; ?>]" id="profex_<?php echo $element['name']; ?>">
                         <option value="none" default="default"><?php _e('Select a page', 'profex'); ?></option>
                         <?php    
                             $opt = $profex_settings_array[$element['name']];
@@ -104,13 +118,14 @@ function display_elements($elements, $profex_settings_array){
             ?>
                 <div class="rt_input rt_text">
                     <div class="rt_description">
-                        <label for="multi_<?php echo $element['name']; ?>"><?php _e($element['title'], 'multi'); ?></label>
+                        <label for="profex_<?php echo $element['name']; ?>"><?php _e($element['title'], 'profex'); ?></label>
+                        <?php if(isset($element['description']) && $element['description'] != '') echo '<small>'.$element['description'].'</small>'; ?>
                         <div class="rt_clearfix"></div>
                     </div>
-                    <select name="multi_options[<?php echo $element['name']; ?>]" id="multi_page_id">
-                        <option value="none" default="default"><?php _e('Select a category', 'multi'); ?></option>
+                    <select name="profex_options[<?php echo $element['name']; ?>]" id="profex_<?php echo $element['name']; ?>">
+                        <option value="none" default="default"><?php _e('Select a category', 'profex'); ?></option>
                         <?php    
-                            $opt = $multi_settings_array[$element['name']];
+                            $opt = $profex_settings_array[$element['name']];
                             $cats = get_categories('orderby=name');
                             foreach ($cats as $cat ) {
                                 echo '<option value="'.$cat->cat_ID.'" '.selected( $opt, $cat->cat_ID ).' >'.$cat->cat_name.'</option>';
@@ -142,31 +157,39 @@ function display_elements($elements, $profex_settings_array){
             <?php 
                 $elements_general = Array(
                     '0' => Array(
-                        'title'  => 'Header',
+                        'title'  => 'Text heading, using like spliter',
                         'type'   => 'spliter',
                     ),
                     
                     '1' => Array(
-                        'title'  => 'Some link',
-                        'name'   => 'link',
+                        'title'  => 'Text example',
+                        'name'   => 'test_text',
                         'type'   => 'text',
+                        'description'   => 'Text, why you need to write here something',
                     ),
                     
                     '2' => Array(
-                        'title'  => 'Header phone',
-                        'name'   => 'phone',
-                        'type'   => 'text',
+                        'title'  => 'Textarea example',
+                        'name'   => 'test_textarea',
+                        'type'   => 'textarea',
                     ),
                     
                     '3' => Array(
-                        'title'  => 'Home page content',
-                        'type'   => 'spliter',
+                        'title'  => 'Page selector example',
+                        'name'   => 'test_page',
+                        'type'   => 'pages',
                     ),
                     
                     '4' => Array(
-                        'title'  => 'Choose a page for special block on home',
-                        'name'   => 'special_page_id',
-                        'type'   => 'pages',
+                        'title'  => 'Categories selector example',
+                        'name'   => 'test_categories',
+                        'type'   => 'categories',
+                    ),
+                    
+                    '5' => Array(
+                        'title'  => 'Checkbox example',
+                        'name'   => 'test_checkbox',
+                        'type'   => 'checkbox',
                     ),
                 );
                 
@@ -175,53 +198,10 @@ function display_elements($elements, $profex_settings_array){
         </div>        
                 
         <div id="rt_social">
-            <?php 
-                $elements_social = Array(
-                    '0' => Array(
-                        'title'  => 'Links to social profiles',
-                        'type'   => 'spliter',
-                    ),
-                    
-                    '1' => Array(
-                        'title'  => 'Facebook',
-                        'name'   => 'facebook',
-                        'type'   => 'text',
-                    ),
-                    
-                    '2' => Array(
-                        'title'  => 'Twitter',
-                        'name'   => 'twitter',
-                        'type'   => 'text',
-                    ),
-                    
-                    '3' => Array(
-                        'title'  => 'Instagram',
-                        'name'   => 'instagram',
-                        'type'   => 'text',
-                    ),
-                    
-                    '4' => Array(
-                        'title'  => 'LiveJournal',
-                        'name'   => 'livejournal',
-                        'type'   => 'text',
-                    ),
-                );
-                
-                display_elements($elements_social, $profex_options);
-            ?>
+            <p>Heres you can write your fields</p>
         </div>         
         <div id="rt_footer">
-            <?php 
-                $elements_footer = Array(
-                    '0' => Array(
-                        'title'  => 'Copyright text',
-                        'name'   => 'copyright',
-                        'type'   => 'text',
-                    ),
-                );
-                
-                display_elements($elements_footer, $profex_options);
-            ?>          
+            <p>Heres you can write your fields</p>         
         </div>
         
         <div class="clear"></div>
