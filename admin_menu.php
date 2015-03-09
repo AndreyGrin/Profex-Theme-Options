@@ -136,6 +136,22 @@ function display_elements($elements, $profex_settings_array){
                 </div> 
             <?php
             break;
+            
+            case 'editor':
+            ?>
+                <div class="rt_input rt_text">
+                    <div class="rt_description">
+                        <label for="multi_<?php echo $element['name']; ?>"><?php _e($element['title'], 'multi'); ?></label>
+                        <div class="rt_clearfix"></div>
+                    </div>
+                    <?php 
+                        $value = multi_text_check($multi_settings_array, $element['name']);
+                        wp_editor( $value,$element['name'], array ('textarea_rows' => 6, 'textarea_name' => 'profex_options['.$element['name'].']'));
+                    ?>
+                    <div class="rt_clearfix"></div>
+                </div>
+            <?php
+            break;
         }
     }
 }
